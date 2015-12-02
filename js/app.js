@@ -1,32 +1,3 @@
-/* STUDENTS IGNORE THIS FUNCTION
- * All this does is create an initial
- * attendance record if one is not found
- * within localStorage.
- */
-(function() {
-    if (!localStorage.attendance) {
-        console.log('Creating attendance records...');
-        function getRandom() {
-            return (Math.random() >= 0.5);
-        }
-
-        var nameColumns = $('tbody .name-col'),
-            attendance = {};
-
-        nameColumns.each(function() {
-            var name = this.innerText;
-            attendance[name] = [];
-
-            for (var i = 0; i <= 11; i++) {
-                attendance[name].push(getRandom());
-            }
-        });
-
-        localStorage.attendance = JSON.stringify(attendance);
-    }
-}());
-
-
 /* STUDENT APPLICATION */
 $(function() {
   'use strict';
@@ -70,7 +41,59 @@ $(function() {
     }
   };
 
+  var controller = {
+    init: function() {
+      model.init();
+      view.init(model.students, model.totalStudents, model.totalDays);
+    }
+  };
 
+  var view = {
+    init: function(students, totalStudents, totalDays) {
+      view.render_thead(totalDays);
+      view.render_tbody(students, totalStudents, totalDays);
+    },
+
+    render_thead: function(totalDays) {
+      var $tr = $('<tr>');
+      var $th = $('<th>').attr('class', 'name-col').text('Student Name');
+      $tr.append($th);
+
+      var i;
+      for (i = 0; i < totalDays; i++) {
+        $th = $('<th>').text(i + 1);
+        $tr.append($th);
+      }
+
+      $th = $('<th>').attr('class', 'missed-col').text('Days Missed');
+      $tr.append($th);
+      $('thead').append($tr);
+    },
+
+    render_tbody: function(students, totalStudents, totalDays) {
+      var i, j, $tr, $td, $input;
+      for (i = 0; i < totalStudents; i++) {
+        $tr = $('<tr>').attr('class', 'student');
+        $td = $('<td>').attr('class', 'name-col').text(students[i].name);
+        $tr.append($td);
+
+        for (j = 0; j < totalDays; j++) {
+          $input = $('<input>').attr('type', 'checkbox').prop('checked', students[i].attendance[j]);
+          $td = $('<td>').attr('class', 'name-col').append($input);
+          $tr.append($td);
+        }
+
+        $td = $('<td>').attr('class', 'missed-col').text(students[i].numMissed);
+        $tr.append($td);
+        $('tbody').append($tr);
+      }
+    }
+
+  };
+  
+  controller.init();
+
+  /*
     var attendance = JSON.parse(localStorage.attendance),
         $allMissed = $('tbody .missed-col'),
         $allCheckboxes = $('tbody input');
@@ -123,4 +146,5 @@ $(function() {
     });
 
     countMissing();
+  */
 }());
