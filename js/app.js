@@ -29,6 +29,48 @@
 
 /* STUDENT APPLICATION */
 $(function() {
+  'use strict';
+
+  var model = {
+    students: [
+      {name: 'Slappy the Frog'},
+      {name: 'Lilly the Lizard'},
+      {name: 'Paulrus the Walrus'},
+      {name: 'Gregory the Goat'},
+      {name: 'Adam the Anaconda'}
+    ],
+
+    totalStudents: 5,
+    totalDays: 12,
+
+    getRandomBoolean: function() {
+      return (Math.random() >= 0.5);
+    },
+
+    init: function() {
+      model.totalStudents = model.students.length;
+      if (!localStorage.attendance) {
+        console.log('Creating attendance records...');
+        var i, j, bool;
+        for (i = 0; i < model.totalStudents; i++) {
+          model.students[i].numMissed = 0;
+          model.students[i].attendance = [];
+          for (j = 0; j < model.totalDays; j++) {
+            bool = model.getRandomBoolean();
+            model.students[i].numMissed += bool ? 0 : 1;
+            model.students[i].attendance.push(bool);
+          }
+        }
+        localStorage.attendance = JSON.stringify(model.students);
+      } else {
+        model.students = JSON.parse(localStorage.attendance);
+        model.totalStudents = model.students.length;
+        model.totalDays = model.students[0].attendance.length;
+      }
+    }
+  };
+
+
     var attendance = JSON.parse(localStorage.attendance),
         $allMissed = $('tbody .missed-col'),
         $allCheckboxes = $('tbody input');
